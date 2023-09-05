@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: basic-bot
-          image: basic-bot:latest
+          image: zhijieacr.azurecr.io/basic-bot:latest
           ports:
             - containerPort: 3978
           resources:
