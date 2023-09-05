@@ -57,6 +57,10 @@ server.post("/api/messages", async (req, res) => {
   });
 });
 
+server.post("/", async (req, res) => {
+  res.send("Hello World");
+});
+
 // Gracefully shutdown HTTP server
 ["exit", "uncaughtException", "SIGINT", "SIGTERM", "SIGUSR1", "SIGUSR2"].forEach((event) => {
   process.on(event, () => {

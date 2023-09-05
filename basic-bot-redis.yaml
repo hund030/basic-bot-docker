@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: basic-bot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: basic-bot
+  template:
+    metadata:
+      labels:
+        app: basic-bot
+    spec:
+      containers:
+        - name: basic-bot
+          image: basic-bot:latest
+          ports:
+            - containerPort: 3978
+          resources:
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: basic-bot
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 3978
+  selector:
+    app: basic-bot

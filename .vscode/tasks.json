@@ -11,7 +11,7 @@
                 "Start local tunnel",
                 "Provision",
                 "Deploy",
-                "Start application"
+                //"Start application"
             ],
             "dependsOrder": "sequence"
         },
