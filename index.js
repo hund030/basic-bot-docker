@@ -12,6 +12,7 @@ const {
 } = require("botbuilder");
 const { TeamsBot } = require("./teamsBot");
 const config = require("./config");
+const fs = require("fs");
 
 // Create adapter.
 // See https://aka.ms/about-bot-adapter to learn more about adapters.
@@ -44,7 +45,10 @@ adapter.onTurnError = async (context, error) => {
 const bot = new TeamsBot();
 
 // Create HTTP server.
-const server = restify.createServer();
+const server = restify.createServer({
+  certificate: fs.readFileSync("./certs/localhost.crt"),
+  key: fs.readFileSync("./certs/localhost.key"),
+});
 server.use(restify.plugins.bodyParser());
 server.listen(process.env.port || process.env.PORT || 3978, function () {
   console.log(`\nBot started, ${server.name} listening to ${server.url}`);
@@ -57,7 +61,7 @@ server.post("/api/messages", async (req, res) => {
   });
 });
 
-server.post("/", async (req, res) => {
+server.get("/", async (req, res) => {
   res.send("Hello World");
 });
 
