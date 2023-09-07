@@ -14,9 +14,9 @@ spec:
     spec:
       containers:
         - name: basic-bot
-          image: basicbotacr.azurecr.io/basic-bot:tls
+          image: basicbotacr.azurecr.io/basic-bot:v10
           ports:
-            - containerPort: 443
+            - containerPort: 80
 ---
 apiVersion: v1
 kind: Service
@@ -25,6 +25,6 @@ metadata:
 spec:
   type: LoadBalancer
   ports:
-    - port: 443
+    - port: 80
   selector:
     app: basic-bot

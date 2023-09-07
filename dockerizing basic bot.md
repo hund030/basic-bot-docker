@@ -33,12 +33,12 @@
 1. Run the docker image locally
 
     ```
-    docker run -p 443:443 basic-bot
+    docker run -p 80:80 basic-bot
     ```
 1. Tunnel your localhost to public url with [ngrok](https://ngrok.com/)
 
     ```
-    ngrok http https://localhost:443
+    ngrok http https://localhost:80
     ```
 1. Update the bot endpoint to your ngrok https endpoint in dev portal. For example, https://75fe5c3e.ngrok.io/api/messages
 1. Launch a Teams web client and install the teams app to test the bot: https://teams.microsoft.com/l/app/\<Teams-app-id\>?installAppPackage=true&webjoin=true
@@ -87,7 +87,7 @@
     ```
     $ kubectl get service basic-bot
     NAME        TYPE           CLUSTER-IP     EXTERNAL-IP    PORT(S)         AGE
-    basic-bot   LoadBalancer   10.0.218.138   20.241.162.9   443:31421/TCP   5h4m
+    basic-bot   LoadBalancer   10.0.218.138   20.241.162.9   80:31421/TCP   5h4m
     ```
 
 1. Update the bot endpoint in dev portal. For example, https://20.241.162.9/api/messages.

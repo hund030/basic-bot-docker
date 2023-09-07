@@ -33,7 +33,7 @@ provision:
     with:
       botId: ${{BOT_ID}}
       name: zhijieapp09043
-      messagingEndpoint: https://www.example.com/api/messages
+      messagingEndpoint: https://basicbotaks.eastus.cloudapp.azure.com/api/messages
       description: ""
       channels:
         - name: msteams
@@ -63,17 +63,6 @@ provision:
       # Relative path to this file. This is the path for built zip file.
       appPackagePath: ./appPackage/build/appPackage.${{TEAMSFX_ENV}}.zip
 
-  - uses: devTool/install
-    with:
-      devCert:
-        trust: true
-    writeToEnvironmentFile:
-      sslCertFile: SSL_CRT_FILE
-      sslKeyFile: SSL_KEY_FILE
-  - uses: script
-    with:
-      run: mkdir ./certs; cp ${SSL_CRT_FILE} ./certs; cp ${SSL_KEY_FILE} ./certs;
-
   # Generate runtime environment variables
   - uses: file/createOrUpdateEnvironmentFile
     with:
@@ -81,4 +70,5 @@ provision:
       envs:
         BOT_ID: ${{BOT_ID}}
         BOT_PASSWORD: ${{SECRET_BOT_PASSWORD}}
+
 projectId: 68e2d8ba-1f6d-4cb3-ba66-3cf0ff9134de
