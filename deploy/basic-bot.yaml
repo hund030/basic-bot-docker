@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: basic-bot
-          image: basicbotacr.azurecr.io/basic-bot:v10
+          image: basicbotacr.azurecr.io/basic-bot:ingress-v2
           ports:
             - containerPort: 80
 ---
@@ -23,7 +23,7 @@ kind: Service
 metadata:
   name: basic-bot
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   ports:
     - port: 80
   selector:

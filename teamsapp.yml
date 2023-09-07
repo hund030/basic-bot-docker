@@ -33,7 +33,7 @@ provision:
     with:
       botId: ${{BOT_ID}}
       name: zhijieapp09043
-      messagingEndpoint: https://basicbotaks.eastus.cloudapp.azure.com/api/messages
+      messagingEndpoint: https://www.example.com/api/messages
       description: ""
       channels:
         - name: msteams
