@@ -46,8 +46,8 @@ const bot = new TeamsBot();
 
 // Create HTTP server.
 const server = restify.createServer({
-  certificate: fs.readFileSync("./certs/localhost.crt"),
-  key: fs.readFileSync("./certs/localhost.key"),
+  key: process.env.SERVER_KEY_FILE ? fs.readFileSync(process.env.SERVER_KEY_FILE) : undefined,
+  certificate: process.env.SERVER_KEY_FILE ? fs.readFileSync(process.env.SERVER_CERT_FILE) : undefined
 });
 server.use(restify.plugins.bodyParser());
 server.listen(process.env.port || process.env.PORT || 3978, function () {

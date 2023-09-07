@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: basic-bot
-          image: basicbotacr.azurecr.io/basic-bot:v5
+          image: basicbotacr.azurecr.io/basic-bot:tls
           ports:
             - containerPort: 443
 ---
