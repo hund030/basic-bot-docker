@@ -16,6 +16,9 @@
     },
     "botDisplayName": {
       "value": "zhijieapp09043"
+    },
+    "botDomain": {
+      "value": "www.example.com"
     }
   }
 }
