@@ -1,7 +1,7 @@
 
 ## Overview
 
-This document demostrates how to dockerizing a basic teams bot and deploy to Azure Kubernetes cluster, Azure Container App or Azure App Service.
+This document introduces how to dockerizing a basic teams bot and deploy to Azure Kubernetes cluster, Azure Container App or Azure App Service.
 Here is the comparation for different container hosting in Azure: https://learn.microsoft.com/en-us/azure/container-apps/compare-options.
 
 Users can choose the ideal option based on their requirement.
@@ -31,7 +31,7 @@ Followings are the detailed steps:
 1. Refer to the Teams Toolkit project file [teamsapp.yml](./teamsapp.yml)
 1. Run `Teams: Provision` command from VS Code command palette
 
-1. Find your bot registration id and teams app id from [.env.local](./env/.env.local)
+1. Find your bot registration id and teams app id from [.env.dev](./env/.env.dev)
     ```
     TEAMS_APP_ID=
     BOT_ID=
@@ -222,7 +222,7 @@ Since Teams bot endpoint must be a HTTPS endpoint. We need to setup TLS for the 
     $ az extension add --name containerapp --upgrade
     $ az provider register --namespace Microsoft.App
     $ az provider register --namespace Microsoft.OperationalInsights
-    $ az containerapp up -n <container-app-name> -g <rg> -l
+    $ az containerapp up -n <container-app-name> -g <rg> --location eastus --environment 'basic-bot' --image <acrLoginServer>/basic-bot:v1 --target-port 80 --ingress external --query properties.configuration.ingress.fqdn
     ```
 
 ## Create Azure App Service and deploy the image to it
