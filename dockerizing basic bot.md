@@ -1,5 +1,25 @@
+
+## Overview
+
+This document demostrates how to dockerizing a basic teams bot and deploy to Azure Kubernetes cluster, Azure Container App or Azure App Service.
+Here is the comparation for different container hosting in Azure: https://learn.microsoft.com/en-us/azure/container-apps/compare-options
+Users can choose the ideal option based on their requirement.
+
+Followings are the steps:
+
+1. [Create Teams App and Bot Registration](#leverage-teams-toolkit-to-create-teams-app-bot-registration)
+1. [Build the docker image](#build-the-docker-image)
+    - [Verify the docker image](#optional-verify-the-docker-image)
+1. [Push the docker image to Azure Container Registry](#push-the-docker-image-to-azure-container-registry)
+1. [[Option.1] Create Azure Kubernetes cluster and deploy](#create-kubernetes-cluster-and-deploy-the-application)
+    - [Setup TLS with an ingress controller](#setup-tls-with-an-ingress-controller)
+1. [[Option.2] Create Azure Container App and deploy](#create-azure-container-app-and-deploy-the-image-to-it)
+1. [[Option.3] Create Azure App Service and deploy](#create-azure-app-service-and-deploy-the-image-to-it)
+1. [Update bot registration to redirect to the hosting](#update-the-bot-registration-and-preview-the-bot-in-teams-client)
+
 ## Prerequisite
 
+* Teams Toolkit
 * Az CLI
 * Helm
 * Kubectl
@@ -50,7 +70,7 @@
 1. Update the bot endpoint to your ngrok https endpoint in dev portal. For example, https://75fe5c3e.ngrok.io/api/messages
 1. Launch a Teams web client and install the teams app to test the bot: https://teams.microsoft.com/l/app/\<Teams-app-id\>?installAppPackage=true&webjoin=true
 
-## Deploy the docker image to Azure Container Registry
+## Push the docker image to Azure Container Registry
 
 1. Follow the document to create container registry: https://learn.microsoft.com/en-us/azure/aks/tutorial-kubernetes-prepare-acr?tabs=azure-cli
 
@@ -188,14 +208,31 @@ Since Teams bot endpoint must be a HTTPS endpoint. We need to setup TLS for the 
 
 1. Verify the certificate.
 
-```
-$ kubectl get certificate --namespace ingress-basic --watch
-NAME         READY   SECRET       AGE
-tls-secret   False   tls-secret   11s
-tls-secret   True    tls-secret   25s
-```
+    ```
+    $ kubectl get certificate --namespace ingress-basic --watch
+    NAME         READY   SECRET       AGE
+    tls-secret   False   tls-secret   11s
+    tls-secret   True    tls-secret   25s
+    ```
 
-## Update the bot endpoint and preview the bot in Teams client
+## Create Azure Container App and deploy the image to it
+
+    ```
+    $ az extension add --name containerapp --upgrade
+    $ az provider register --namespace Microsoft.App
+    $ az provider register --namespace Microsoft.OperationalInsights
+    $ az containerapp up -n <container-app-name> -g <rg> -l
+    ```
+
+## Create Azure App Service and deploy the image to it
+
+    ```
+    $ az group create --name DockerRG --location <region>
+    $ az appservice plan create -n myappserviceplan -g DockerRG --is-linux
+    $ az webapp create -n <unique-appname> -g DockerRG -p myappserviceplan -i <acrLoginServer>/basic-bot:v1
+    ```
+
+## Update the bot registration and preview the bot in Teams client
 
 1. Go to dev portal and update the bot endpoint to <your-FQDN>/api/messages: https://dev.teams.microsoft.com/bots/\<botId>/configure. In this sample case, the endpoint is https://aliasbasicbot.eastus.cloudapp.azure.com/api/messages.
 1. Launch a Teams web client and install the teams app to test the bot: https://teams.microsoft.com/l/app/\<Teams-app-id\>?installAppPackage=true&webjoin=true
