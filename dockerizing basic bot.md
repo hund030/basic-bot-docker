@@ -221,9 +221,10 @@ Teams application endpoints must be an HTTPS endpoint. To set this up:
 ## Option 3 - Deploy to Azure App Service
 
     ```
-    $ az group create --name DockerRG --location <region>
-    $ az appservice plan create -n myappserviceplan -g DockerRG --is-linux
-    $ az webapp create -n <unique-appname> -g DockerRG -p myappserviceplan -i <acrLoginServer>/basic-bot:v1
+    $ az extension add --name containerapp --upgrade
+    $ az provider register --namespace Microsoft.App
+    $ az provider register --namespace Microsoft.OperationalInsights
+    $ az containerapp up -n <container-app-name> -g <rg> -l
     ```
 
 ## Update the bot registration and preview the bot in Teams client
