@@ -2,10 +2,11 @@
 ## Overview
 
 This document demostrates how to dockerizing a basic teams bot and deploy to Azure Kubernetes cluster, Azure Container App or Azure App Service.
-Here is the comparation for different container hosting in Azure: https://learn.microsoft.com/en-us/azure/container-apps/compare-options
+Here is the comparation for different container hosting in Azure: https://learn.microsoft.com/en-us/azure/container-apps/compare-options.
+
 Users can choose the ideal option based on their requirement.
 
-Followings are the steps:
+Followings are the detailed steps:
 
 1. [Create Teams App and Bot Registration](#leverage-teams-toolkit-to-create-teams-app-bot-registration)
 1. [Build the docker image](#build-the-docker-image)
