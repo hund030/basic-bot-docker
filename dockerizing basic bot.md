@@ -5,15 +5,15 @@ This document introduces how to deploy a Teams application to either Azure Kuber
 
 The following are the steps you need to take to deploy your Teams application:
 
-1. [Create Teams App and Bot Registration](#leverage-teams-toolkit-to-create-teams-app-bot-registration)
+1. [Create Teams App and Bot Registration](#use-teams-toolkit-to-create-a-teams-app)
 1. [Build the docker image](#build-the-docker-image)
-    - [Verify the docker image](#optional-verify-the-docker-image)
+    - [Verify the docker image](#optional-test-the-docker-image-locally)
 1. [Push the docker image to Azure Container Registry](#push-the-docker-image-to-azure-container-registry)
 1. Deploy your application.
-    - [[Option 1] Deploy to Azure Kubernetes Service](#create-kubernetes-cluster-and-deploy-the-application)
-        - [Setup TLS with an ingress controller](#setup-tls-with-an-ingress-controller)
-    - [[Option 2] Deploy to Azure Container Apps](#create-azure-container-app-and-deploy-the-image-to-it)
-    - [[Option 3] Deploy to Azure App Service](#create-azure-app-service-and-deploy-the-image-to-it)
+    - [[Option 1] Deploy to Azure Kubernetes Service](#option-1---deploy-to-azure-kubernetes-service)
+        - [Setup TLS with an ingress controller](#setup-tls)
+    - [[Option 2] Deploy to Azure Container Apps](#option-2---deploy-to-azure-container-apps)
+    - [[Option 3] Deploy to Azure App Service](#option-3---deploy-to-azure-app-service)
 1. [Update the Teams app bot registration](#update-the-bot-registration-and-preview-the-bot-in-teams-client)
 
 ## Prerequisites
