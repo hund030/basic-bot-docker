@@ -71,4 +71,14 @@ provision:
         BOT_ID: ${{BOT_ID}}
         BOT_PASSWORD: ${{SECRET_BOT_PASSWORD}}
 
+  - uses: arm/deploy
+    with:
+      subscriptionId: ${{AZURE_SUBSCRIPTION_ID}}
+      resourceGroupName: ${{AZURE_RESOURCE_GROUP_NAME}}
+      templates:
+        - path: ./infra/azure.bicep  # Relative path to this file
+          parameters: ./infra/azure.parameters.json
+          deploymentName: Create-resources-for-tab
+      bicepCliVersion: v0.9.1
+
 projectId: 68e2d8ba-1f6d-4cb3-ba66-3cf0ff9134de
