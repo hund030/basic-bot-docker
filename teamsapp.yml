@@ -28,16 +28,6 @@ provision:
       # The Azure Active Directory application's client secret created for bot.
       botPassword: SECRET_BOT_PASSWORD
 
-  # Create or update the bot registration on dev.botframework.com
-  - uses: botFramework/create
-    with:
-      botId: ${{BOT_ID}}
-      name: zhijieapp09043
-      messagingEndpoint: https://www.example.com/api/messages
-      description: ""
-      channels:
-        - name: msteams
-
   # Validate using manifest schema
   - uses: teamsApp/validateManifest
     with:
@@ -80,5 +70,37 @@ provision:
           parameters: ./infra/azure.parameters.json
           deploymentName: Create-resources-for-tab
       bicepCliVersion: v0.9.1
+
+  # Create or update the bot registration on dev.botframework.com
+  - uses: botFramework/create
+    with:
+      botId: ${{BOT_ID}}
+      name: zhijieapp09043
+      messagingEndpoint: https://${{AZURE_CONTAINER_APPFQDN}}/api/messages
+      description: ""
+      channels:
+        - name: msteams
+
+
+deploy:
+  - uses: script
+    with:
+      run: docker build -t basic-bot .
+  
+  - uses: script
+    with:
+      run: echo "::set-teamsfx-env AZURE_CONTAINER_IMAGE=${{AZURE_CONTAINER_APP_NAME}}.azurecr.io/basic-bot:v1"
+
+  - uses: script
+    with:
+      run: docker tag basic-bot:latest ${{AZURE_CONTAINER_IMAGE}}
+
+  - uses: script
+    with:
+      run: docker push ${{AZURE_CONTAINER_IMAGE}}
+
+  - uses: script
+    with:
+      run: az containerapp up -n ${{AZURE_CONTAINER_APP_NAME}} --image ${{AZURE_CONTAINER_IMAGE}}
 
 projectId: 68e2d8ba-1f6d-4cb3-ba66-3cf0ff9134de

@@ -118,5 +118,6 @@ resource containerApp 'Microsoft.App/containerApps@2023-05-01' = {
   }
 }
 
-output contaierAppFQDN string = containerApp.properties.configuration.ingress.fqdn
-output containerImage string = acrImportImage.outputs.importedImages[0].acrHostedImage
+output AZURE_CONTAINER_APP_NAME string = containerApp.name
+output AZURE_CONTAINER_APPFQDN string = containerApp.properties.configuration.ingress.fqdn
+output AZURE_CONTAINER_IMAGE string = acrImportImage.outputs.importedImages[0].acrHostedImage
