@@ -92,6 +92,13 @@ The following are the steps you need to take to deploy your Teams application:
 1. Follow this document to create an Azure Kubernetes Service cluster: https://learn.microsoft.com/en-us/azure/aks/tutorial-kubernetes-deploy-cluster?tabs=azure-cli
 1. Open the deployment file [basic-bot.yaml](./basic-bot.yaml) included in this project.
 1. Update the image name in deployment file.
+
+    ```
+    containers:
+        - name: basic-bot
+          image: <acrLoginServer>/basic-bot:v1
+    ```
+
 1. Deploy the container.
 
     ```
@@ -221,15 +228,14 @@ Teams application endpoints must be an HTTPS endpoint. To set this up:
 ## Option 3 - Deploy to Azure App Service
 
     ```
-    $ az extension add --name containerapp --upgrade
-    $ az provider register --namespace Microsoft.App
-    $ az provider register --namespace Microsoft.OperationalInsights
-    $ az containerapp up -n <container-app-name> -g <rg> -l
+    $ az group create --name DockerRG --location <region>
+    $ az appservice plan create -n myappserviceplan -g DockerRG --is-linux
+    $ az webapp create -n <unique-appname> -g DockerRG -p myappserviceplan -i <acrLoginServer>/basic-bot:v1
     ```
 
 ## Update the bot registration and preview the bot in Teams client
 
 Regardless of where you deployed your application, the final step is to update the bot registration to refer to the endpoint of your application.
 
-1. Go to dev portal and update the bot endpoint to <your-FQDN>/api/messages: https://dev.teams.microsoft.com/bots/\<botId>/configure. In this sample case, the endpoint is https://<unique-appname>.azurewebsites.net/api/messages.
+1. Go to dev portal and update the bot endpoint to <your-FQDN>/api/messages: https://dev.teams.microsoft.com/bots/\<botId>/configure. In this sample case, the endpoint is https://aliasbasicbot.eastus.cloudapp.azure.com/api/messages.
 1. Launch a Teams web client and install the teams app to test the bot: https://teams.microsoft.com/l/app/\<Teams-app-id\>?installAppPackage=true&webjoin=true
