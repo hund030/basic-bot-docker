@@ -1,0 +1,42 @@
+name: Trigger auto deployment for zhijieaca
+
+# When this action will be executed
+on:
+  # Automatically trigger it when detected changes in repo
+  push:
+    branches: 
+      [ main ]
+    paths:
+    - '**'
+    - '.github/workflows/zhijieaca-AutoDeployTrigger-14ed52e5-bd39-4b3e-a988-55b8d93fdb35.yml'
+
+  # Allow manual trigger 
+  workflow_dispatch:
+      
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout to the branch
+        uses: actions/checkout@v2
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.ZHIJIEACA_AZURE_CREDENTIALS }}
+
+      - name: Build and push container image to registry
+        uses: azure/container-apps-deploy-action@v1
+        with:
+          appSourcePath: ${{ github.workspace }} 
+          registryUrl: basicbotacr.azurecr.io
+          registryUsername: ${{ secrets.ZHIJIEACA_REGISTRY_USERNAME }}
+          registryPassword: ${{ secrets.ZHIJIEACA_REGISTRY_PASSWORD }}
+          containerAppName: zhijieaca
+          resourceGroup: zhijietest
+          imageToBuild: basicbotacr.azurecr.io/basic-bot:${{ github.sha }}
+          
+
+     
+
