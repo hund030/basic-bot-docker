@@ -17,5 +17,6 @@ jobs:
           registry: ${{ secrets.registry }}
           repository: ${{ secrets.acr_repository }}
           image: basic-bot
+          tag: acr-build
           dockerfile: ./Dockerfile
           branch: main
