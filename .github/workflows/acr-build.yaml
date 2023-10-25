@@ -1,0 +1,21 @@
+name: build_image
+on:
+  push:
+    branches: 
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: ACR build
+        id: acr
+        uses: azure/acr-build@v1
+        with:
+          service_principal: ${{ secrets.acr_service_principal }}
+          service_principal_password: ${{ secrets.acr_service_principal_password }}
+          tenant: ${{ secrets.tenant }}
+          registry: ${{ secrets.registry }}
+          repository: ${{ secrets.acr_repository }}
+          image: basic-bot
+          dockerfile: ./Dockerfile
+          branch: main
