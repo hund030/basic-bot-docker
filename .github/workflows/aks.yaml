@@ -1,8 +1,8 @@
 name: build_deploy_aks
 on:
   push:
-    paths:
-      - "main"
+    branches:
+      ["main"]
 jobs:
   build:
     runs-on: ubuntu-latest
