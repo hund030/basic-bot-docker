@@ -26,7 +26,7 @@ jobs:
         id: login
         uses: azure/login@v1.4.3
         with:
-          creds: ${{ secrets.ZHIJIEACA_AZURE_CREDENTIALS }}
+          creds: ${{ secrets.AKS_CREDENTIALS }}
       - name: Set AKS context
         id: set-context
         uses: azure/aks-set-context@v3
