@@ -42,7 +42,6 @@ jobs:
         with:
           namespace: "default"
           manifests: |
-            https://github.com/cert-manager/cert-manager/releases/download/v1.13.1/cert-manager.yaml
             ./deploy/basic-bot.yaml
             ./deploy/basic-bot-ingress.yaml
             ./deploy/cluster-issuer.yaml
