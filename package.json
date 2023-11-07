@@ -2,7 +2,7 @@
     "name": "zhijieapp09043",
     "version": "1.0.0",
     "msteams": {
-      "teamsAppId": null
+        "teamsAppId": null
     },
     "description": "Microsoft Teams Toolkit hello world Bot sample",
     "engines": {
@@ -20,7 +20,7 @@
         "test": "echo \"Error: no test specified\" && exit 1"
     },
     "dependencies": {
-        "botbuilder": "^4.20.0",
+        "botbuilder": "^4.13.6",
         "restify": "^10.0.0"
     },
     "devDependencies": {
