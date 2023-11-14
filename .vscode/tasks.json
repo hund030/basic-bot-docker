@@ -102,13 +102,12 @@
             }
         },
         {
-            "label": "Start Teams App in Docker",
+            "label": "Prepare Dependencies",
             "dependsOn": [
                 "Validate prerequisites",
                 "Start local tunnel",
                 "Provision",
-                "Deploy",
-                "docker-run: debug"
+                "Deploy"
             ],
             "dependsOrder": "sequence"
         },

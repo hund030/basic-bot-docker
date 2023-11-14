@@ -72,7 +72,17 @@
                 "group": "all",
                 "hidden": true
             },
+            "cascadeTerminateToConfigurations": [
+                "Docker Node.js Launch"
+            ],
             "internalConsoleOptions": "neverOpen"
+        },
+        {
+            "name": "Docker Node.js Launch",
+            "type": "docker",
+            "request": "launch",
+            "preLaunchTask": "docker-run: debug",
+            "platform": "node"
         }
     ],
     "compounds": [
@@ -105,9 +115,10 @@
         {
             "name": "Debug Docker (Edge)",
             "configurations": [
-                "Launch Docker App (Edge)"
+                "Launch Docker App (Edge)",
+                "Docker Node.js Launch"
             ],
-            "preLaunchTask": "Start Teams App in Docker",
+            "preLaunchTask": "Prepare Dependencies",
             "presentation": {
                 "group": "all",
                 "order": 3
