@@ -62,6 +62,17 @@
                 "hidden": true
             },
             "internalConsoleOptions": "neverOpen"
+        },
+        {
+            "name": "Launch Docker App (Edge)",
+            "type": "msedge",
+            "request": "launch",
+            "url": "https://teams.microsoft.com/l/app/${{local:TEAMS_APP_ID}}?installAppPackage=true&webjoin=true&${account-hint}",
+            "presentation": {
+                "group": "all",
+                "hidden": true
+            },
+            "internalConsoleOptions": "neverOpen"
         }
     ],
     "compounds": [
@@ -88,6 +99,18 @@
             "presentation": {
                 "group": "all",
                 "order": 2
+            },
+            "stopAll": true
+        },
+        {
+            "name": "Debug Docker (Edge)",
+            "configurations": [
+                "Launch Docker App (Edge)"
+            ],
+            "preLaunchTask": "Start Teams App in Docker",
+            "presentation": {
+                "group": "all",
+                "order": 3
             },
             "stopAll": true
         }
