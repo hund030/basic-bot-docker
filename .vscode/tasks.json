@@ -132,8 +132,8 @@
                     "containerPort": 3978,
                     "hostPort": 3978
                 }],
-                "command": "node --inspect-brk=0.0.0.0 ./index.js",
-                "envFiles": [".localConfigs"]
+                "command": "node --inspect-brk=0.0.0.0 --watch ./index.js",
+                "envFiles": [".localConfigs"],
             },
             "node": {
                 "enableDebugging": true,
