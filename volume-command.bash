@@ -1,0 +1,1 @@
+docker run --rm --name vol-test  -p 3978:3978 -p 9229:9229 --env-file .localConfigs -v .:/usr/src/app -v /usr/src/app/node_modules zhijieapp09043 node --inspect --watch ./index.js

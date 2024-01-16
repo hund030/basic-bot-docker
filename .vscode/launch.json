@@ -62,6 +62,27 @@
                 "hidden": true
             },
             "internalConsoleOptions": "neverOpen"
+        },
+        {
+            "name": "Launch Docker App (Edge)",
+            "type": "msedge",
+            "request": "launch",
+            "url": "https://teams.microsoft.com/l/app/${{local:TEAMS_APP_ID}}?installAppPackage=true&webjoin=true&${account-hint}",
+            "presentation": {
+                "group": "all",
+                "hidden": true
+            },
+            "cascadeTerminateToConfigurations": [
+                "Docker Node.js Launch"
+            ],
+            "internalConsoleOptions": "neverOpen"
+        },
+        {
+            "name": "Docker Node.js Launch",
+            "type": "docker",
+            "request": "launch",
+            "preLaunchTask": "docker-run: debug",
+            "platform": "node"
         }
     ],
     "compounds": [
@@ -88,6 +109,19 @@
             "presentation": {
                 "group": "all",
                 "order": 2
+            },
+            "stopAll": true
+        },
+        {
+            "name": "Debug Docker (Edge)",
+            "configurations": [
+                "Launch Docker App (Edge)",
+                "Docker Node.js Launch"
+            ],
+            "preLaunchTask": "Prepare Dependencies",
+            "presentation": {
+                "group": "all",
+                "order": 3
             },
             "stopAll": true
         }

@@ -4,6 +4,12 @@
   "parameters": {
     "resourceBaseName": {
       "value": "bot${{RESOURCE_SUFFIX}}"
+    },
+    "botAadAppClientId": {
+      "value": "${{BOT_ID}}"
+    },
+    "botAadAppClientSecret": {
+      "value": "${{SECRET_BOT_PASSWORD}}"
     }
   }
 }

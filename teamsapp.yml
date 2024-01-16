@@ -106,5 +106,6 @@ deploy:
   - uses: script
     with:
       run: az containerapp up -n ${{AZURE_CONTAINER_APP_NAME}} --image ${{AZURE_CONTAINER_IMAGE}}
+        --env-vars "BOT_ID=secretref:bot-id" "BOT_PASSWORD=secretref:bot-password"
 
 projectId: 68e2d8ba-1f6d-4cb3-ba66-3cf0ff9134de

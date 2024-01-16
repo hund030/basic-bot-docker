@@ -3,6 +3,16 @@
 @description('Used to generate names for all resources in this file')
 param resourceBaseName string
 
+@description('Required when create Azure Bot service')
+param botAadAppClientId string
+
+@secure()
+@description('Required by Bot Framework package in your bot project')
+param botAadAppClientSecret string
+
+@description('Specifies the port that bot service listening on')
+param botPort int = 3978
+
 @description('Specifies the docker container image to deploy.')
 param containerImage string = 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
 
@@ -70,9 +80,19 @@ resource containerApp 'Microsoft.App/containerApps@2023-05-01' = {
   properties: {
     managedEnvironmentId: containerAppEnv.id
     configuration: {
+      secrets: [
+        {
+          name: 'bot-id'
+          value: botAadAppClientId
+        }
+        {
+          name: 'bot-password'
+          value: botAadAppClientSecret
+        }
+      ]
       ingress: {
         external: true
-        targetPort: 80
+        targetPort: botPort
         allowInsecure: false
         traffic: [
           {
@@ -89,7 +109,6 @@ resource containerApp 'Microsoft.App/containerApps@2023-05-01' = {
       ]
     }
     template: {
-      revisionSuffix: 'firstrevision'
       containers: [
         {
           name: resourceBaseName
@@ -98,6 +117,16 @@ resource containerApp 'Microsoft.App/containerApps@2023-05-01' = {
             cpu: json('.25')
             memory: '.5Gi'
           }
+          env: [
+            {
+              name: 'BOT_ID'
+              secretRef: 'bot-id'
+            }
+            {
+              name: 'BOT_PASSWORD'
+              secretRef: 'bot-password'
+            }
+          ]
         }
       ]
       scale: {

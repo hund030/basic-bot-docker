@@ -100,6 +100,45 @@
                     "endsPattern": "restify listening to|Bot/ME service listening at|[nodemon] app crashed"
                 }
             }
+        },
+        {
+            "label": "Prepare Dependencies",
+            "dependsOn": [
+                "Validate prerequisites",
+                "Start local tunnel",
+                "Provision",
+                "Deploy"
+            ],
+            "dependsOrder": "sequence"
+        },
+        {
+            "type": "docker-build",
+            "label": "docker-build",
+            "platform": "node",
+            "dockerBuild": {
+                "dockerfile": "${workspaceFolder}/Dockerfile",
+                "context": "${workspaceFolder}",
+                "pull": true
+            }
+        },
+        {
+            "type": "docker-run",
+            "label": "docker-run: debug",
+            "dependsOn": [
+                "docker-build"
+            ],
+            "dockerRun": {
+                "ports": [{
+                    "containerPort": 3978,
+                    "hostPort": 3978
+                }],
+                "command": "node --inspect-brk=0.0.0.0 --watch ./index.js",
+                "envFiles": [".localConfigs"],
+            },
+            "node": {
+                "enableDebugging": true,
+                "inspectPort": 9229
+            }
         }
     ]
 }

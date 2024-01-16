@@ -61,7 +61,7 @@ server.post("/api/messages", async (req, res) => {
 
 server.get("/", async (req, res) => {
   console.log("get /")
-  res.send("Hello World");
+  res.send(`Hello World: ${config.botId}`);
 });
 
 // Gracefully shutdown HTTP server
