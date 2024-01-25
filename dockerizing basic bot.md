@@ -136,7 +136,7 @@ Teams application endpoints must be an HTTPS endpoint. To set this up:
     --namespace $NAMESPACE \
     --set controller.service.annotations."service\.beta\.kubernetes\.io/azure-load-balancer-health-probe-request-path"=/healthz
 
-    $ kubectl get services --namespace ingress-basic -o wide -w ingress-nginx-controller
+    $ kubectl get services --namespace $NAMESPACE -o wide -w ingress-nginx-controller
 
     NAME                       TYPE           CLUSTER-IP    EXTERNAL-IP     PORT(S)                      AGE    SELECTOR
     ingress-nginx-controller   LoadBalancer   10.0.14.224   20.246.235.30   80:32514/TCP,443:32226/TCP   142m   app.kubernetes.io/component=controller,app.kubernetes.io/instance=ingress-nginx,app.kubernetes.io/name=ingress-nginx
@@ -177,12 +177,12 @@ Teams application endpoints must be an HTTPS endpoint. To set this up:
     ```
     ACR_URL=<REGISTRY_URL> // basicbotacr.azurecr.io in this sample case
 
-    kubectl label namespace ingress-basic cert-manager.io/disable-validation=true
+    kubectl label namespace $NAMESPACE cert-manager.io/disable-validation=true
     helm repo add jetstack https://charts.jetstack.io
     helm repo update
 
     helm install cert-manager jetstack/cert-manager \
-    --namespace ingress-basic \
+    --namespace $NAMESPACE \
     --version=$CERT_MANAGER_TAG \
     --set installCRDs=true \
     --set nodeSelector."kubernetes\.io/os"=linux \
@@ -197,7 +197,7 @@ Teams application endpoints must be an HTTPS endpoint. To set this up:
 1. Create a CA cluster issuer. Refer to [deploy/cluster-issuer.yaml](./deploy/cluster-issuer.yaml).
 
     ```
-    kubectl apply -f deploy/cluster-issuer.yaml --namespace ingress-basic
+    kubectl apply -f deploy/cluster-issuer.yaml --namespace $NAMESPACE
     ```
 
 1. Create ingress routes. In this sample case, we have only one bot service, so all of the traffic is routed to `basic-bot` service. Refer to [deploy/basic-bot-ingress.yaml](./deploy/basic-bot-ingress.yaml)
