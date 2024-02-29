@@ -32,7 +32,7 @@ Azure Kubernetes Service (AKS) is a managed container orchestration service prov
 
 To deploy your Teams bot on an Azure Kubernetes service, follow these steps:
 
-1. Ensure you have an existing Azure Kubernetes Service connected to your Azure Container Registry, which hosts your container images. If you do not have one, please refer to this tutorial: [AKS Tutorials](https://learn.microsoft.com/azure/aks/tutorial-kubernetes-prepare-app).
+1. Ensure you have an existing Azure Kubernetes Service connected to your Azure Container Registry, which hosts your container images. If you do not have one, please refer to this tutorial: [AKS Tutorials](https://learn.microsoft.com/azure/aks/learn/quick-kubernetes-deploy-cli).
 1. Install dependencies for setting up TLS. Refer to [Create an ingress controller](https://learn.microsoft.com/azure/aks/ingress-basic?tabs=azure-cli) and [Use TLS with Let's Encrypt certificates](https://learn.microsoft.com/azure/aks/ingress-tls?tabs=azure-cli#use-tls-with-lets-encrypt-certificates).
     ```
     NAMESPACE=ingress-basic
