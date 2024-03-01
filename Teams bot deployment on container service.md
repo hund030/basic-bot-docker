@@ -1,4 +1,4 @@
-bg Deploying a Teams Bot to a Container Service
+# Deploying a Teams Bot to a Container Service
 
 This guide will walk you through the process of deploying a Teams bot to a container service. The deployment process will be covered under three sections: Azure Container Apps, Azure Kubernetes Service, and On-Premise Kubernetes Cluster.
 
