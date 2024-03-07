@@ -81,20 +81,15 @@ provision:
       channels:
         - name: msteams
 
-
 deploy:
-  - uses: script
-    with:
-      run: docker build -t basic-bot .
-  
   - uses: script
     with:
       run: echo "::set-teamsfx-env AZURE_CONTAINER_IMAGE=${{AZURE_CONTAINER_APP_NAME}}.azurecr.io/basic-bot:latest"
 
   - uses: script
     with:
-      run: docker tag basic-bot:latest ${{AZURE_CONTAINER_IMAGE}}
-
+      run: docker build -t ${{AZURE_CONTAINER_IMAGE}} .
+  
   - uses: script
     with:
       run: az acr login -n ${{AZURE_CONTAINER_APP_NAME}}
