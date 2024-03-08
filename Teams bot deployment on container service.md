@@ -6,9 +6,13 @@ This guide will walk you through the process of deploying a Teams bot to a conta
 
 You can download the [sample application](https://github.com/OfficeDev/TeamsFx-Samples/tree/dev/bot-sso-docker) used in this tutorial from the Teams Toolkit sample gallery. This sample provides a ready-to-use experience for Azure Container Apps development. With a few configuration adjustments, you can also deploy it to Azure Kubernetes Service or an on-premise Kubernetes cluster.
 
+You will need an Azure Account and use [Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli) for ACA deployment or AKS deployment. 
+
+> Note that the commands in this tutorial are based on Bash. You may need to make some adjustment to make them work in other command line interface.
+
 ## Deploying to Azure Container Apps
 
-Azure Container Apps is a fully managed service that allows you to run containerized applications in the cloud. If you don't need direct access to all native Kubernetes APIs and cluster management, Azure Container Apps offers a fully managed experience based on best practices.
+Azure Container Apps is a fully managed service that allows you to run containerized applications in the cloud. This is an ideal choice if you don't need direct access to all native Kubernetes APIs and cluster management, and prefer a fully managed experience based on best practices.
 
 By using the sample application, you can simply run the `provision` and `deploy` commands in Teams Toolkit. Teams Toolkit will then create an Azure Container Registry and an Azure Container Apps for you, build your application into a Docker image, and deploy it to Azure Container Apps.
 
@@ -17,7 +21,7 @@ The `provision` command creates and configures the following resources:
 * A Teams app with bot capability
 * An Azure Container Registry to host your Docker image
 * An Azure Container App Environment and an Azure Container Apps to host your bot application
-* An Azure Entra App for authorization
+* An Azure Entra App for authentication
 * An Azure Bot Service to channel Teams client and Azure Container Apps
 
 The `deploy` command performs the following:
@@ -30,10 +34,18 @@ The `deploy` command performs the following:
 
 Azure Kubernetes Service (AKS) is a managed container orchestration service provided by Azure. If you're looking for a fully managed version of Kubernetes in Azure, AKS is an ideal choice. 
 
-To deploy your Teams bot on an Azure Kubernetes service, follow these steps:
+### Architecture
+
+![image](https://github.com/hund030/basic-bot-docker/assets/26134943/29fb7c78-2f3b-4bb6-aa04-5b26b00a02b1)
+
+Teams backend server communicates with your bot via the Azure Bot Service, so the bot definitely needs a public HTTPS address. You need to deploy an ingress controller and provision a TLS certificate on your Kubernetes.
+
+The bot needs to authenticate to Azure Bot Service by Microsoft Entra ID, so you should provision a secret that contains the App ID and password on your Kubernetes and refer to it in your container runtime.
+
+### Setup ingress with HTTPS on AKS
 
 1. Ensure you have an existing Azure Kubernetes Service connected to your Azure Container Registry, which hosts your container images. If you do not have one, please refer to this tutorial: [AKS Tutorials](https://learn.microsoft.com/azure/aks/learn/quick-kubernetes-deploy-cli).
-1. Install dependencies for setting up TLS. Refer to [Create an ingress controller](https://learn.microsoft.com/azure/aks/ingress-basic?tabs=azure-cli) and [Use TLS with Let's Encrypt certificates](https://learn.microsoft.com/azure/aks/ingress-tls?tabs=azure-cli#use-tls-with-lets-encrypt-certificates).
+1. Run the following commands to install ingress controller and certificate manager if you do not have. This is not the only way to setup ingress and TLS certificate on your Kubernetes. You can refer to [Create an ingress controller](https://learn.microsoft.com/azure/aks/ingress-basic?tabs=azure-cli) and [Use TLS with Let's Encrypt certificates](https://learn.microsoft.com/azure/aks/ingress-tls?tabs=azure-cli#use-tls-with-lets-encrypt-certificates) to get more information.
     ```
     NAMESPACE=ingress-basic
 
@@ -50,7 +62,7 @@ To deploy your Teams bot on an Azure Kubernetes service, follow these steps:
     helm repo update
     helm install cert-manager jetstack/cert-manager --namespace $NAMESPACE --set installCRDs=true --set nodeSelector."kubernetes\.io/os"=linux
     ```
-1. Update the DNS for the ingress public IP.
+1. Update the DNS for the ingress public IP and get the ingress endpoint.
     ```
     > kubectl get services --namespace $NAMESPACE -w ingress-nginx-controller
 
@@ -63,7 +75,15 @@ To deploy your Teams bot on an Azure Kubernetes service, follow these steps:
 
     $DNSLABEL.$REGION.cloudapp.azure.com
     ```
-1. It's recommended to use Azure Bot Service to channel Teams client and your bot application. To update your AKS ingress endpoint to the Azure Bot Service, fill the BOT_DOMAIN value in `env/.env.${envName}` with your FQDN. Update the `arm/deploy` action in `teamsapp.yml` and run `provision` command of Teams Toolkit to create a Teams app and a bot registration.
+
+### Provision resources with Teams Toolkit
+
+You can leverage the provision command in Teams Toolkit to create the Teams app with bot capability, the Azure Bot Service and the Microsoft Entra ID for authentication. 
+You can make some updates to the sample code to make it works with your Azure Kubernetes Service.
+
+1. Fill the BOT_DOMAIN value in `env/.env.${envName}` with your FQDN.
+
+1. Update the `arm/deploy` action in `teamsapp.yml` so that Teams Toolkit will provision an Azure Bot Service when running `provision` command. 
     ```
     - uses: arm/deploy 
       with:
@@ -75,24 +95,55 @@ To deploy your Teams bot on an Azure Kubernetes service, follow these steps:
             deploymentName: Create-resources-for-bot
         bicepCliVersion: v0.9.1
     ```
-1. Your bot application typically requires `BOT_ID` and `BOT_PASSWORD` in the process environment for authorization. You can create a secret that serves as environment variables with the following command. Ensure to fill in the values in `deploy/env/.env.dev-secrets` beforehand. You can find the values in `env/.env.${envName}` and `env/.env.dev.user` after provisioning.
+
+1. Run the `provision` command in Teams Toolkit.
+
+1. After provisioning, you can find the `BOT_ID` in `env/.env.${envName}` file and the encrypted `SECRET_BOT_PASSWORD` in `env/.env.${envName}.user` file. Click the `Decrypt secret` annotation to get the real value of `BOT_PASSWORD`.
+
+1. Create a Kubernetes secret that contains `BOT_ID` and `BOT_PASSWORD`. You can store the key-value pair in the `./deploy/.env.dev-secrets` first and run the following command to provision the secret.
     ```
-    kubectl create secret generic dev-secrets --from-env-file ./deploy/env/.env.dev-secrets -n $NAMESPACE
+    kubectl create secret generic dev-secrets --from-env-file ./deploy/.env.dev-secrets -n $NAMESPACE
     ```
-1. Update the hostname and your email in the `deploy/sso-bot.yaml` and apply it.
+
+### Apply the deployment
+
+The sample contains an example deployment file `deploy/sso-bot.yaml` for your reference. You need to update the placeholders before applying it.
+
+1. Update the `<image>` placeholder with your image. For example, `myacr.azurecr.io/sso-bot:latest`.
+
+1. Update the `<hostname>` with your ingress FQDN
+
+1. Update the `<email>` with your email address for generating TLS certificate.
+
+1. Apply `deploy/sso-bot.yaml`.
     ```
     kubectl apply -f deploy/sso-bot.yaml -n $NAMESPACE
     ```
+
 1. In VS Code `Run and Debug` panel, select the `Launch Remote` configuration and press F5 to preview the Teams bot application that deployed on AKS.
 
 ## Deploying to an On-Premise Kubernetes Cluster
 
-You can also deploy a Teams bot to your own Kubernetes cluster or Kubernetes service in other Cloud services, which involves similar steps to deploying on Azure Kubernetes Service. Here are the steps:
+You can deploy a Teams bot to your own Kubernetes cluster or Kubernetes service in other Cloud services, which involves similar steps to deploying on Azure Kubernetes Service. Here are the steps:
 
-1. Set up ingress and TLS for your Kubernetes cluster.
-1. Fill the BOT_DOMAIN value in `env/.env${envName}` with your FQDN.
-1. It's recommended to use Azure Bot Service to channel Teams client and your bot application. To update your AKS ingress endpoint to the Azure Bot Service, fill the BOT_DOMAIN value in `env/.env.${envName}` with your FQDN. Update the `arm/deploy` action in `teamsapp.yml` and run `provision` command of Teams Toolkit to create a Teams app and a bot registration.
-    ```
+### Architecture
+
+![image](https://github.com/hund030/basic-bot-docker/assets/26134943/29fb7c78-2f3b-4bb6-aa04-5b26b00a02b1)
+
+Teams backend server communicates with your bot via the Azure Bot Service, so the bot definitely needs a public HTTPS address. You need to deploy an ingress controller and provision a TLS certificate on your Kubernetes.
+
+The bot needs to authenticate to Azure Bot Service by Microsoft Entra ID, so you should provision a secret that contains the App ID and password on your Kubernetes and refer to it in your container runtime.
+
+### Provision resources with Teams Toolkit
+
+You can leverage the provision command in Teams Toolkit to create the Teams app with bot capability, the Azure Bot Service and the Microsoft Entra ID for authentication. 
+
+You can make some updates to the sample code to make it works with your Kubernetes Service.
+
+1. Fill the BOT_DOMAIN value in `env/.env.${envName}` with your FQDN.
+
+1. Update the `arm/deploy` action in `teamsapp.yml` so that Teams Toolkit will provision an Azure Bot Service when running `provision` command. 
+    ```yaml
     - uses: arm/deploy 
       with:
         subscriptionId: ${{AZURE_SUBSCRIPTION_ID}} 
@@ -103,9 +154,9 @@ You can also deploy a Teams bot to your own Kubernetes cluster or Kubernetes ser
             deploymentName: Create-resources-for-bot
         bicepCliVersion: v0.9.1
     ```
-1. If you don't have an Azure account and cannot create Azure Bot Service, you can create a bot registration in dev.botframework.com as an alternative. Add the botFramework/create action in the provision stage in `teamsapp.yml` to leverage Teams Toolkit to create a bot registration with the correct messaging endpoint.
+
+1. It is recommended to use Azure Bot Service for channeling. If you don't have an Azure account and cannot create Azure Bot Service, you can create a bot registration as an alternative. Add the `botFramework/create` action in the provision stage in `teamsapp.yml` to leverage Teams Toolkit to create a bot registration with the correct messaging endpoint.
     ```yaml
-    # Create or update the bot registration on dev.botframework.com
     - uses: botFramework/create
         with:
         botId: ${{BOT_ID}}
@@ -118,14 +169,28 @@ You can also deploy a Teams bot to your own Kubernetes cluster or Kubernetes ser
 
     You can remove the `arm/deploy` action in `teamsapp.yml` file since we do not need any Azure resources.
 
-    > Note that `botFramework/create` action requires `BOT_ID` which is generated by `botAadApp/create` action. So `botFramework/create` action should follow `botAadApp/create` action.
-1. Besides a bot registration, Teams Toolkit also creates a Teams app and an Azure Entra App by running the provision command, as it is defined in the provision stage in `teamsapp.yml` file.
-1. Your bot application typically requires at least `BOT_ID` and `BOT_PASSWORD` in the process environment for authorization. You can create a secret that serves as environment variables with the following command. Ensure to fill in the values in `deploy/env/.env.dev-secrets` beforehand. You can find the values in `env/.env.${envName}` and `env/.env.dev.user` after provisioning.
+1. Run the `provision` command in Teams Toolkit.
+
+1. After provisioning, you can find the `BOT_ID` in `env/.env.${envName}` file and the encrypted `SECRET_BOT_PASSWORD` in `env/.env.${envName}.user` file. Click the `Decrypt secret` annotation to get the real value of `BOT_PASSWORD`.
+
+1. Create a Kubernetes secret that contains `BOT_ID` and `BOT_PASSWORD`. You can store the key-value pair in the `./deploy/.env.dev-secrets` first and run the following command to provision the secret.
     ```
-    kubectl create secret generic dev-secrets --from-env-file ./deploy/env/.env.dev-secrets -n $NAMESPACE
+    kubectl create secret generic dev-secrets --from-env-file ./deploy/.env.dev-secrets -n $NAMESPACE
     ```
-1. Update the hostname and your email in the `deploy/sso-bot.yaml` and apply it.
+
+### Apply the deployment
+
+The sample contains an example deployment file `deploy/sso-bot.yaml` for your reference. You need to update the placeholders before applying it.
+
+1. Update the `<image>` placeholder with your image. For example, `myacr.azurecr.io/sso-bot:latest`.
+
+1. Update the `<hostname>` with your ingress FQDN
+
+1. Update the `<email>` with your email address for generating TLS certificate.
+
+1. Apply `deploy/sso-bot.yaml`.
     ```
     kubectl apply -f deploy/sso-bot.yaml -n $NAMESPACE
     ```
-1. In VS Code `Run and Debug` panel, select the `Launch Remote` configuration and press F5 to preview the Teams bot application that deployed on your on-premise Kubernetes cluster.
+
+1. In VS Code `Run and Debug` panel, select the `Launch Remote` configuration and press F5 to preview the Teams bot application that deployed on AKS.
