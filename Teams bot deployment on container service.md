@@ -1,20 +1,20 @@
 # Deploying a Teams Bot to a Container Service
 
-This guide will walk you through the process of deploying a Teams bot to a container service. The deployment process will be covered under three sections: Azure Container Apps, Azure Kubernetes Service, and On-Premise Kubernetes Cluster.
+This guide will help you deploy a Teams bot to a container service. We'll cover the deployment process in three sections: Azure Container Apps, Azure Kubernetes Service, and On-Premise Kubernetes Cluster.
 
 ## Prerequisites
 
 You can download the [sample application](https://github.com/OfficeDev/TeamsFx-Samples/tree/dev/bot-sso-docker) used in this tutorial from the Teams Toolkit sample gallery. This sample provides a ready-to-use experience for Azure Container Apps development. With a few configuration adjustments, you can also deploy it to Azure Kubernetes Service or an on-premise Kubernetes cluster.
 
-You will need an Azure Account and use [Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli) for ACA deployment or AKS deployment. 
+You'll need an Azure Account and the [Azure CLI](https://learn.microsoft.com/cli/azure/install-azure-cli) for ACA or AKS deployment. 
 
-> Note that the commands in this tutorial are based on Bash. You may need to make some adjustment to make them work in other command line interface.
+> Please note that the commands in this tutorial are based on Bash. You may need to adjust them to work in other command line interfaces.
 
 ## Deploying to Azure Container Apps
 
-Azure Container Apps is a fully managed service that allows you to run containerized applications in the cloud. This is an ideal choice if you don't need direct access to all native Kubernetes APIs and cluster management, and prefer a fully managed experience based on best practices.
+Azure Container Apps is a fully managed service that lets you run containerized applications in the cloud. It's an excellent choice if you don't require direct access to all native Kubernetes APIs and cluster management, and prefer a fully managed experience based on best practices.
 
-By using the sample application, you can simply run the `provision` and `deploy` commands in Teams Toolkit. Teams Toolkit will then create an Azure Container Registry and an Azure Container Apps for you, build your application into a Docker image, and deploy it to Azure Container Apps.
+With the sample application, you can simply run the `provision` and `deploy` commands in Teams Toolkit. Teams Toolkit will create an Azure Container Registry and an Azure Container Apps for you, build your application into a Docker image, and deploy it to Azure Container Apps.
 
 The `provision` command creates and configures the following resources:
 
@@ -38,14 +38,14 @@ Azure Kubernetes Service (AKS) is a managed container orchestration service prov
 
 ![image](https://github.com/hund030/basic-bot-docker/assets/26134943/29fb7c78-2f3b-4bb6-aa04-5b26b00a02b1)
 
-Teams backend server communicates with your bot via the Azure Bot Service, so the bot definitely needs a public HTTPS address. You need to deploy an ingress controller and provision a TLS certificate on your Kubernetes.
+The Teams backend server communicates with your bot via the Azure Bot Service, which requires your bot to have a public HTTPS address. To achieve this, you will need to deploy an ingress controller and provision a TLS certificate on your Kubernetes.
 
-The bot needs to authenticate to Azure Bot Service by Microsoft Entra ID, so you should provision a secret that contains the App ID and password on your Kubernetes and refer to it in your container runtime.
+Your bot authenticates with the Azure Bot Service using Microsoft Entra ID, so you should provision a secret that contains the App ID and password on your Kubernetes and reference it in your container runtime.
 
 ### Setup ingress with HTTPS on AKS
 
 1. Ensure you have an existing Azure Kubernetes Service connected to your Azure Container Registry, which hosts your container images. If you do not have one, please refer to this tutorial: [AKS Tutorials](https://learn.microsoft.com/azure/aks/learn/quick-kubernetes-deploy-cli).
-1. Run the following commands to install ingress controller and certificate manager if you do not have. This is not the only way to setup ingress and TLS certificate on your Kubernetes. You can refer to [Create an ingress controller](https://learn.microsoft.com/azure/aks/ingress-basic?tabs=azure-cli) and [Use TLS with Let's Encrypt certificates](https://learn.microsoft.com/azure/aks/ingress-tls?tabs=azure-cli#use-tls-with-lets-encrypt-certificates) to get more information.
+1. Run the following commands to install ingress controller and certificate manager. This is not the only way to set up ingress and TLS certificates on your Kubernetes cluster. For more information, refer to [Create an ingress controller](https://learn.microsoft.com/azure/aks/ingress-basic?tabs=azure-cli) and [Use TLS with Let's Encrypt certificates](https://learn.microsoft.com/azure/aks/ingress-tls?tabs=azure-cli#use-tls-with-lets-encrypt-certificates).
     ```
     NAMESPACE=ingress-basic
 
