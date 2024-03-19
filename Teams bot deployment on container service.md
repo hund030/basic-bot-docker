@@ -14,20 +14,20 @@ You'll need an Azure Account and the [Azure CLI](https://learn.microsoft.com/cli
 
 Azure Container Apps is a fully managed service that lets you run containerized applications in the cloud. It's an excellent choice if you don't require direct access to all native Kubernetes APIs and cluster management, and prefer a fully managed experience based on best practices.
 
-With the sample application, you can simply run the `provision` and `deploy` commands in Teams Toolkit. Teams Toolkit will create an Azure Container Registry and an Azure Container Apps for you, build your application into a Docker image, and deploy it to Azure Container Apps.
+With the sample application, you can simply run the `provision` and `deploy` commands in Teams Toolkit. Teams Toolkit will create an Azure Container Registry and an Azure Container Apps for you, build your application into a container image, and deploy it to Azure Container Apps.
 
 The `provision` command creates and configures the following resources:
 
 * A Teams app with bot capability
-* An Azure Container Registry to host your Docker image
+* An Azure Container Registry to host your container image
 * An Azure Container App Environment and an Azure Container Apps to host your bot application
 * An Azure Entra App for authentication
 * An Azure Bot Service to channel Teams client and Azure Container Apps
 
 The `deploy` command performs the following:
 
-* Builds the application into a Docker image
-* Pushes the Docker image to Azure Container Registry
+* Builds the application into a container image
+* Pushes the container image to Azure Container Registry
 * Deploys the image to Azure Container Apps
 
 ## Deploying to Azure Kubernetes Service
